@@ -224,19 +224,6 @@ const g_http_observer = {
 				ctx.fallback_done = true;
 			}
 		}
-		if (typeof(proxy) === "string")
-		{
-			proxy = {url: proxy};
-		}
-		if ( ! proxy.hasOwnProperty("strip_protocol"))
-		{
-			proxy.strip_protocol = g_settings.strip_protocol;
-		}
-		if ( ! proxy.hasOwnProperty("urlencode"))
-		{
-			proxy.urlencode = g_settings.urlencode;
-		}
-
 		let url = ctx.url;
 		if (proxy.strip_protocol)
 		{
@@ -340,15 +327,16 @@ const g_pref_observer = {
 				break;
 			case "strip_protocol":
 				g_settings.strip_protocol = get_bool_pref(data);
+				read_proxies();
 				break;
 			case "urlencode":
 				g_settings.urlencode = get_bool_pref(data);
+				read_proxies();
 				break;
 			default:
 				if (data === "proxy_url" || data === "fallback_proxy_url" || data.startsWith("proxy_url."))
 				{
-					g_settings.proxies = read_proxy("proxy_url"); g_settings.proxy_idx = 0;
-					g_settings.fallback_proxies = read_proxy("fallback_proxy_url");
+					read_proxies();
 				}
 				break;
 		}
@@ -379,10 +367,21 @@ function read_proxy(pref_name)
 			if (pref_exists(uname = "proxy_url." + uname))
 			{
 				const str = trim(get_char_pref(uname));
-				const data = str.startsWith("{") ? JSON.parse(str) : str;
-				if (data)
+				try
 				{
+					const data = str.startsWith("{") ? JSON.parse(str) : {url: str};
+					if ( ! data.url) { return; }
+					["strip_protocol", "urlencode"].forEach(function(prop){
+						if ( ! data.hasOwnProperty(prop))
+						{
+							data[prop] = g_settings[prop];
+						}
+					});
 					values.push(data);
+				}
+				catch (x)
+				{
+					Cu.reportError("ERROR: Invalid proxy '" + uname + "': invalid JSON: " + (x && x.message || x));
 				}
 			}
 		});
@@ -394,6 +393,13 @@ function read_proxy(pref_name)
 
 	return rc;
 }
+
+function read_proxies()
+{
+	g_settings.proxies = read_proxy("proxy_url"); g_settings.proxy_idx = 0;
+	g_settings.fallback_proxies = read_proxy("fallback_proxy_url");
+}
+
 
 function pref_exists(name)
 {
@@ -463,7 +469,7 @@ function pref(name, value)
 	}
 	catch (e)
 	{
-		Cu.reportError("prefLoader.pref: can't set default pref value for: " + name);
+		Cu.reportError("prefLoader.pref: can't set default pref value for: " + name + ": " + (e && e.message || e));
 	}
 }
 
@@ -477,10 +483,9 @@ function startup(data, reason)
 	g_pref_observer.register();
 
 	g_settings.enabled = get_bool_pref("enabled");
-	g_settings.fallback_proxies = read_proxy("fallback_proxy_url");
-	g_settings.proxies = read_proxy("proxy_url"); g_settings.proxy_idx = 0;
 	g_settings.strip_protocol = get_bool_pref("strip_protocol");
 	g_settings.urlencode = get_bool_pref("urlencode");
+	read_proxies();
 
 	if (g_settings.enabled)
 	{
