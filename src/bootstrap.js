@@ -54,7 +54,6 @@ const g_http_observer = {
 			const bypass_header = "x-extensions-avif_proxy-bypass";
 			if (channel.getRequestHeader(bypass_header))
 			{
-				channel.setRequestHeader(bypass_header, "", false);
 				return;
 			}
 		}
