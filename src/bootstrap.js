@@ -49,10 +49,18 @@ const g_http_observer = {
 		}
 		channel.QueryInterface(Ci.nsIHttpChannel);
 
+		const bypass_header = "x-extensions-avif_proxy-bypass";
 		try
 		{
-			const bypass_header = "x-extensions-avif_proxy-bypass";
 			if (channel.getRequestHeader(bypass_header))
+			{
+				return;
+			}
+		}
+		catch(x){void(x);}
+		try
+		{
+			if (channel.getResponseHeader(bypass_header))
 			{
 				return;
 			}
