@@ -282,7 +282,10 @@ function should_process_channel(channel)
 function is_proxy_url(url)
 {
 	return (g_settings.proxies || []).concat(g_settings.fallback_proxies || [])
-		.some(function(o){return url.startsWith(typeof(o) === "string" ? o : o.url);});
+		.some(function(o){
+			const purl = (typeof(o) === "string" ? o : o.url).replace(/%url%.*$/, "");
+			return url.startsWith(purl);
+		});
 }
 function get_mime_type_for_channel(channel)
 {
