@@ -482,6 +482,7 @@ function pref(name, value)
 
 
 
+// eslint-disable-next-line no-unused-vars
 function startup(data, reason)
 {
 	void(data, reason);
@@ -500,6 +501,7 @@ function startup(data, reason)
 	}
 }
 
+// eslint-disable-next-line no-unused-vars
 function shutdown(data, reason)
 {
 	void(data, reason);
@@ -510,8 +512,10 @@ function shutdown(data, reason)
 	g_http_observer.unregister();
 }
 
+// eslint-disable-next-line no-unused-vars
 function install(){}
 
+// eslint-disable-next-line no-unused-vars
 function uninstall(data, reason)
 {
 	void(data, reason);
