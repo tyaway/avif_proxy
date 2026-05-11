@@ -1,0 +1,10 @@
+pref("extensions.avif_proxy.enabled", true);
+pref("extensions.avif_proxy.proxy_url", "wp0, wp1, wp2");
+pref("extensions.avif_proxy.fallback_proxy_url", "weserv, wsrv");
+pref("extensions.avif_proxy.proxy_url.weserv", "{\"url\":\"https://images.weserv.nl/?url=%url%\",\"strip_protocol\":false,\"urlencode\":true}");
+pref("extensions.avif_proxy.proxy_url.wp0", "https://i0.wp.com/%url%");
+pref("extensions.avif_proxy.proxy_url.wp1", "https://i1.wp.com/%url%");
+pref("extensions.avif_proxy.proxy_url.wp2", "https://i2.wp.com/%url%");
+pref("extensions.avif_proxy.proxy_url.wsrv", "{\"url\":\"https://wsrv.nl/?url=%url%\",\"strip_protocol\":false,\"urlencode\":true}");
+pref("extensions.avif_proxy.strip_protocol", true);
+pref("extensions.avif_proxy.urlencode", false);

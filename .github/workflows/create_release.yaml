@@ -1,0 +1,28 @@
+name: Create Release
+
+env:
+  MY_OUTFILE: "avif_proxy-${{ github.ref_name }}.xpi"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@master
+    - name: Create archive.
+      uses: thedoctor0/zip-release@0.7.6
+      with:
+        directory: "src"
+        type: "zip"
+        filename: "../${{ env.MY_OUTFILE }}"
+        exclusions: "*.git* .editorconfig"
+    - name: Create release.
+      uses: ncipollo/release-action@v1.21.0
+      with:
+        artifacts: "${{ env.MY_OUTFILE }}"
